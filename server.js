@@ -6,8 +6,8 @@ const axios = require('axios');
 const PORT = process.env.PORT || 3000;
 
 const config = {
-    channelAccessToken: '',
-    channelSecret: ''
+    channelAccessToken: process.env.CHANNEL_ACCESS_TOKEN,
+    channelSecret: process.env.CHANNEL_SECRET
 };
 
 const app = express();
@@ -52,7 +52,11 @@ function handleEvent(event) {
     // 発言に「明日の天気」が含まれていた時のリプライ
     repMes = '明日の天気ですね?\nちょっと待ってて下さい';
     getWeather(event.source.userId, 1);
-  }else {
+  } else if (/ありがとう/.test(sendMes)) {
+    repMes = 'ふふっ♪\nどういたしまして。';
+  } else if (/好きです/.test(sendMes)) {
+    repMes = '私も好きですよ。あなた♡';
+  } else {
     // それ以外は発言をそのまま返す
     repMes = sendMes;
   }
@@ -71,7 +75,7 @@ console.log(`Server running at ${PORT}`);
  * 
  * @return 日付 [月/日(曜日)]
  */
-function getDate() {
+const getDate = () => {
   let today = new Date(); //今日の日付データ
   
   // 月日取得
